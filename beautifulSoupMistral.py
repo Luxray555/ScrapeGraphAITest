@@ -9,6 +9,12 @@ MISTRAL_API_KEY = "WQkBHs4Mqg9dl5HXamD6dhFceQgmNz37"
 
 client = Mistral(api_key=MISTRAL_API_KEY)
 
+base_urls = [
+    "https://www.e-cancer.fr/Professionnels-de-sante/Le-registre-des-essais-cliniques",
+    "https://www.ffcd.fr/index.php/recherche/essais-therapeutiques",
+    "https://clinicaltrials.gov/search"
+]
+
 def extract_text_from_url(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -86,9 +92,10 @@ def extract_clinical_trial_info(url):
     print(response.choices[0].message.content)
     return json.loads(response.choices[0].message.content.strip().removeprefix("```json").removesuffix("```").strip())
 
-# Exemple d'URL d’essai clinique :
-url = "https://clinicaltrials.gov/study/NCT06952452?rank=1"
+if __name__ == "__main__":
+    # Exemple d'URL d’essai clinique :
+    url = "https://clinicaltrials.gov/study/NCT06952452?rank=1"
 
-data = extract_clinical_trial_info(url)
+    data = extract_clinical_trial_info(url)
 
-print(data)
+    print(data)

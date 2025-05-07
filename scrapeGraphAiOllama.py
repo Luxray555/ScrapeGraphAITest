@@ -4,7 +4,7 @@ from pymongo import MongoClient
 
 graph_config = {
     "llm": {
-        "model": "ollama/mistral",
+        "model": "ollama/mistral-nemo",
         "temperature": 0,
         "format": "json",
     },
