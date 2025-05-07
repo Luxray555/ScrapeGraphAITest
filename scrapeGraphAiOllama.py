@@ -1,6 +1,5 @@
 from scrapegraphai.graphs import SmartScraperGraph
 from pydantic import BaseModel, Field
-from pymongo import MongoClient
 
 graph_config = {
     "llm": {
@@ -12,15 +11,25 @@ graph_config = {
     "headless": False,
 }
 
+base_urls = [
+    "https://www.e-cancer.fr/Professionnels-de-sante/Le-registre-des-essais-cliniques",
+    "https://www.ffcd.fr/index.php/recherche/essais-therapeutiques",
+    "https://clinicaltrials.gov/search"
+]
+
 class URLListSchema(BaseModel):
     urls: list[str] = Field(description="Liste des URLs des essais cliniques")
+
+class EligibilityCriteriaSchema(BaseModel):
+    inclusion: list[str] = Field(description="Critères d'inclusion")
+    exclusion: list[str] = Field(description="Critères d'exclusion")
 
 class ClinicalTrialSchema(BaseModel):
     title: str = Field(description="Titre de l'essai clinique")
     summary: str = Field(description="Résumé de l'essai clinique")
-    eligibility_criteria: str = Field(description="Critères d'éligibilité de l'essai clinique")
+    eligibility_criteria: EligibilityCriteriaSchema = Field(description="Critères d'éligibilité")
     treatment_type: str = Field(description="Type de traitement utilisé dans l'essai")
-    location: str = Field(description="Lieu ou pays de l'essai clinique")
+    location: list[str] = Field(description="Lieu ou pays de l'essai clinique")
     start_date: str = Field(description="Date de début de l'essai")
     end_date: str = Field(description="Date de fin prévue ou effective")
     status: str = Field(description="Statut actuel de l'essai (en cours, terminé, etc.)")
@@ -65,17 +74,9 @@ def scrape_clinical_trials(url : str) :
 
     return all_trials
 
-client = MongoClient("mongodb://localhost:27017/")  # Modifier si tu utilises une URI distante
-db = client["essais_cliniques"]
-collection = db["cancer_digestif"]
+if __name__ == "__main__":
+    # Exemple d'URL d’essai clinique :
+    url = "https://clinicaltrials.gov/study/NCT06952452?rank=1"
 
-urls = [
-    "https://www.e-cancer.fr/Professionnels-de-sante/Le-registre-des-essais-cliniques",
-    "https://www.ffcd.fr",
-    "https://clinicaltrials.gov/ct2/home"
-]
-
-
-for url in urls:
-    clinical_trials = scrape_clinical_trial(url)
-    print(clinical_trials)
+    clinical_trial = scrape_clinical_trial(url)
+    print(clinical_trial)
